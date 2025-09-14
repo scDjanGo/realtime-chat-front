@@ -19,10 +19,15 @@ export default function page() {
   const { setCurrentChat } = useCurrentChat((state) => state);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const messages = useMessagesStore((state) => state.messages);
+  const clearMessages = useMessagesStore((state) => state.clearMessages);
   const addMessage = useMessagesStore((state) => state.addMessage);
   const { activeUsers, setActiveUsers, addActiveUsers } = useActiveUsersStore(
     (state) => state
   );
+
+  useEffect(() => {
+    clearMessages();
+  }, []);
 
   // Подключение к WebSocket
   useEffect(() => {

@@ -1,7 +1,6 @@
 "use client";
 
 import { useActiveUsersStore, useMyUserStore, useOpenMainBurger } from "@/store";
-import { typeUser } from "@/types/types";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 
@@ -16,6 +15,8 @@ export default function Users_Bar() {
     router.push(`/chats/${uuid}`);
     offBurger();
   };
+
+
 
   return (
     <>
