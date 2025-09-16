@@ -1,16 +1,23 @@
 "use client";
 
 import { useChatsWS, useMessagesStore } from "@/store";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Chat_Header from "../../components/Chat_Header";
 import Send_Message from "@/pages-components/current-chat/Send_Message";
 import Message_Component from "../../components/Message_Component";
 import Auto_Focus_Elem from "@/components/Auto_Focus_Elem";
+import Skeleton_Message from "@/components/Skeleton_Message";
+import Preloader_Messages from "@/components/Preloader_Messages";
 
 export default function Chat_Room() {
   const { messages } = useMessagesStore((state) => state);
   const { wsData } = useChatsWS((state) => state);
   const [inputValue, setInputValue] = useState("");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    wsData ? setLoading(false) : setLoading(true);
+  }, [wsData]);
 
   const sendMessage = () => {
     if (!inputValue.trim() || !wsData) return;
@@ -24,12 +31,17 @@ export default function Chat_Room() {
       <Chat_Header />
 
       {/* Сообщения */}
-      <div className="flex-1 overflow-y-auto bg-chat-pattern p-4 space-y-3">
-        {messages.map((msg, idx) => (
-          <Message_Component key={idx} message={msg} />
-        ))}
-        <Auto_Focus_Elem handler={messages} />
-      </div>
+      {!loading && (
+        <div className="flex-1 overflow-y-auto bg-chat-pattern p-4 space-y-3">
+          {messages.map((msg, idx) => (
+            <Message_Component key={idx} message={msg} />
+          ))}
+          <Auto_Focus_Elem handler={messages} />
+        </div>
+      )}
+
+      {/* Preloader */}
+      <Preloader_Messages loading={loading} />
 
       {/* Ввод */}
       <Send_Message
