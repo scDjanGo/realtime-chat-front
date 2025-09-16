@@ -28,14 +28,14 @@ export default function Home() {
       </div>
 
       <Link
-        href="#"
+        href="https://github.com/scDjanGo/realtime-chat-front"
         className=" text-[12px] font-[500] fixed bottom-[20px] left-[20px] z-10 bg-green-500 rounded-[8px] p-[6px_12px] text-white"
       >
         Как пользоватся ?
       </Link>
 
       <Link
-        href="#"
+        href="https://github.com/scDjanGo"
         className="text-gray-500 text-[12px] font-[500] fixed bottom-[20px] right-[20px] z-10"
       >
         сделано: scDjanGo
