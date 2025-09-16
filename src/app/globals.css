@@ -31,3 +31,39 @@
 * {
   font-family: "IBM Plex Sans", sans-serif;
 }
+
+
+@layer utilities {
+  @keyframes gradientShift {
+
+    0%,
+    100% {
+      background-position: 0% 50%;
+    }
+
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  @keyframes pulseCustom {
+
+    0%,
+    100% {
+      transform: scale(1);
+    }
+
+    50% {
+      transform: scale(1.1);
+    }
+  }
+
+  .animate-gradientShift {
+    animation: gradientShift 20s ease infinite;
+    background-size: 200% 200%;
+  }
+
+  .animate-pulseCustom {
+    animation: pulseCustom 10s ease-in-out infinite;
+  }
+}

@@ -1,29 +1,20 @@
 "use client";
 
-import Chat_Header from "@/components/Chat_Header";
-import { useCurrentChat, useCurrentMessages, useMyUserStore } from "@/store";
-import { useParams } from "next/navigation";
+import { useChatsWS, useMessagesStore } from "@/store";
 import { useState } from "react";
-import Send_Message from "./Send_Message";
-import Message_Component from "@/components/Message_Component";
+import Chat_Header from "../../components/Chat_Header";
+import Send_Message from "@/pages-components/current-chat/Send_Message";
+import Message_Component from "../../components/Message_Component";
 import Auto_Focus_Elem from "@/components/Auto_Focus_Elem";
 
-export default function Current_Chat_Room() {
-  const { myUser } = useMyUserStore((state) => state);
-  const { wsCurrent } = useCurrentChat((state) => state);
-  const { uuid } = useParams();
+export default function Chat_Room() {
+  const { messages } = useMessagesStore((state) => state);
+  const { wsData } = useChatsWS((state) => state);
   const [inputValue, setInputValue] = useState("");
-  const messages = useCurrentMessages((state) => state.messages);
 
   const sendMessage = () => {
-    if (!inputValue.trim() || !wsCurrent) return;
-    wsCurrent.send(
-      JSON.stringify({
-        from: myUser?.uuid,
-        to: String(uuid),
-        message: inputValue,
-      })
-    );
+    if (!inputValue.trim() || !wsData) return;
+    wsData.send(JSON.stringify({ type: "message", message: inputValue }));
     setInputValue("");
   };
 

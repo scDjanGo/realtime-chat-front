@@ -4,13 +4,8 @@ import { useMessagesStore } from "./stores/useMessagesStore";
 import { useActiveUsersStore } from "./stores/useActiveUsersStore";
 import { useMyUserStore } from "./stores/useMyUserStore";
 import { useCurrentChat } from "./stores/useCurrentChatWS";
-
-
-
-
-
-
-
+import { useCurrentMessages } from "./stores/useCurrentMessages";
+import { useNotificationsStore } from "./stores/useNoticicationsStore";
 
 export {
   useOpenMainBurger,
@@ -19,4 +14,6 @@ export {
   useActiveUsersStore,
   useMyUserStore,
   useCurrentChat,
+  useCurrentMessages,
+  useNotificationsStore,
 };

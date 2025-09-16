@@ -15,6 +15,7 @@ export default function layout({ children }: { children: React.ReactNode }) {
     (state) => state
   );
   const addMessage = useMessagesStore((state) => state.addMessage);
+  const setMessages = useMessagesStore(state => state.setMessages)
   const { setChatsData, wsData } = useChatsWS((state) => state);
 
   useEffect(() => {
@@ -26,6 +27,9 @@ export default function layout({ children }: { children: React.ReactNode }) {
       const data = JSON.parse(event.data);
 
       switch (data.type) {
+        case "history":
+          setMessages(data.data)
+        break
         case "init":
           setMyUser(data.user);
           break;

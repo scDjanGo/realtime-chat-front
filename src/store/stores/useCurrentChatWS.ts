@@ -7,8 +7,8 @@ type StoreType = {
 
 const useCurrentChat = create<StoreType>((set) => ({
   wsCurrent: null,
-  setCurrentChat(data: WebSocket) {
-    set({ wsCurrent: data });
+  setCurrentChat(newMessages: WebSocket) {
+    set({ wsCurrent: newMessages });
   },
 }));
 

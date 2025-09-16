@@ -1,59 +1,64 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import Users_Bar from "@/components/Users_Bar";
+import { useEffect } from "react";
+import Users_Bar from "@/components/Sidebar_Main";
 import { useParams } from "next/navigation";
 import Current_Chat_Room from "@/pages-components/current-chat/Current_Chat_Room";
 import {
   useActiveUsersStore,
   useCurrentChat,
+  useCurrentMessages,
   useMessagesStore,
   useMyUserStore,
 } from "@/store";
+import { useRouter } from "next/navigation";
 
-const SERVER_URL = "wss://realtime-chat-vne1.onrender.com/ws";
+// const SERVER_URL = "wss://realtime-chat-vne1.onrender.com/chat";
+
+const SERVER_URL = `wss://realtime-chat-vne1.onrender.com/chat`;
 
 export default function page() {
   const { uuid } = useParams();
-  const { setMyUser } = useMyUserStore((state) => state);
+  const router = useRouter();
+  const myUser = useMyUserStore((state) => state.myUser);
   const { setCurrentChat } = useCurrentChat((state) => state);
-  const messagesEndRef = useRef<HTMLDivElement | null>(null);
-  const messages = useMessagesStore((state) => state.messages);
+  const addMessagesC = useCurrentMessages((state) => state.addMessageC);
+  const setMessagesC = useCurrentMessages((state) => state.setMessagesC);
+
   const clearMessages = useMessagesStore((state) => state.clearMessages);
-  const addMessage = useMessagesStore((state) => state.addMessage);
-  const { activeUsers, setActiveUsers, addActiveUsers } = useActiveUsersStore(
-    (state) => state
-  );
+  const { activeUsers } = useActiveUsersStore((state) => state);
 
   useEffect(() => {
     clearMessages();
   }, []);
 
+  useEffect(() => {
+    let currentUser = activeUsers.find((item) => item.uuid === uuid);
+
+    if (currentUser) return;
+
+    router.push("/chats");
+  }, [activeUsers]);
+
   // Подключение к WebSocket
   useEffect(() => {
-    const ws = new WebSocket(`${SERVER_URL}/${uuid}`);
+    if (!myUser?.uuid) return;
 
-    ws.onopen = () => console.log("✅ Connected to server");
-
+    const ws = new WebSocket(`${SERVER_URL}?my-uuid=${myUser.uuid}`);
+    ws.onopen = () => console.log("Connected current chat");
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
 
-      switch (data.type) {
-        case "init":
-          setMyUser(data.user);
-          break;
-        case "activeUsers":
-          setActiveUsers(data.users);
-          break;
-        case "newUser":
-          addActiveUsers([data.user]);
-          break;
-        case "userLeft":
-          setActiveUsers(activeUsers.filter((u) => u.uuid !== data.uuid));
-          break;
-        case "message":
-          addMessage(data);
-          break;
+      if (String(data.type) === "history") {
+        setMessagesC(data.data);
+
+        return;
+      }
+      if (
+        (data.from === uuid && data.to === myUser.uuid) ||
+        (data.from === myUser.uuid && data.to === uuid)
+      ) {
+        addMessagesC(data);
       }
     };
 
@@ -64,12 +69,7 @@ export default function page() {
     return () => {
       ws.close();
     };
-  }, []);
-
-  // автоскролл вниз
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  }, [myUser?.uuid]);
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -77,7 +77,7 @@ export default function page() {
       <Users_Bar />
 
       {/* Chat */}
-      <Current_Chat_Room messages={messages} activeUsers={activeUsers} />
+      <Current_Chat_Room />
     </div>
   );
 }
