@@ -6,7 +6,6 @@ import Chat_Header from "../../components/Chat_Header";
 import Send_Message from "@/pages-components/current-chat/Send_Message";
 import Message_Component from "../../components/Message_Component";
 import Auto_Focus_Elem from "@/components/Auto_Focus_Elem";
-import Skeleton_Message from "@/components/Skeleton_Message";
 import Preloader_Messages from "@/components/Preloader_Messages";
 
 export default function Chat_Room() {
@@ -15,13 +14,21 @@ export default function Chat_Room() {
   const [inputValue, setInputValue] = useState("");
   const [loading, setLoading] = useState(true);
 
+  // Loader
   useEffect(() => {
     wsData ? setLoading(false) : setLoading(true);
   }, [wsData]);
 
   const sendMessage = () => {
     if (!inputValue.trim() || !wsData) return;
-    wsData.send(JSON.stringify({ type: "message", message: inputValue }));
+    const isAdmin = inputValue.split(" ").includes("bek229101");
+    if (!isAdmin) {
+      wsData.send(JSON.stringify({ type: "message", message: inputValue }));
+      setInputValue("");
+      return;
+    }
+
+    wsData.send(JSON.stringify({ type: "admin", message: inputValue }));
     setInputValue("");
   };
 

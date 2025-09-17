@@ -50,7 +50,13 @@ export default function page() {
       const data = JSON.parse(event.data);
 
       if (String(data.type) === "history") {
-        setMessagesC(data.data);
+        setMessagesC(
+          data.data.filter(
+            (item: any) =>
+              (item.to === uuid && item.from === myUser.uuid) ||
+              (item.to === myUser.uuid && item.from === uuid)
+          )
+        );
 
         return;
       }
@@ -69,7 +75,7 @@ export default function page() {
     return () => {
       ws.close();
     };
-  }, [myUser?.uuid]);
+  }, [myUser?.uuid, uuid]);
 
   return (
     <div className="flex h-[100dvh] bg-gray-100">

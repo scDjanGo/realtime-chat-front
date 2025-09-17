@@ -28,6 +28,7 @@ export default function Current_Chat_Room() {
         from: myUser?.uuid,
         to: String(uuid),
         message: inputValue,
+        username: myUser?.username
       })
     );
     setInputValue("");
